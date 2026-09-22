@@ -1,0 +1,184 @@
+{% extends 'base.html' %}
+{% block title %}{{ profile.full_name }} — Profile{% endblock %}
+
+{% block content %}
+<div class="mb-3">
+    <a href="{% url 'members:directory' %}" class="btn btn-sm btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Back to Directory
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                {% if profile.profile_photo %}
+                    <img src="{{ profile.profile_photo.url }}"
+                         class="rounded-circle mb-3"
+                         style="width: 160px; height: 160px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 160px; height: 160px; font-size: 3.5rem;">
+                        {{ profile.full_name|first|upper }}
+                    </div>
+                {% endif %}
+
+                <h4>{{ profile.full_name }}</h4>
+
+                {% if profile.designation or profile.organization %}
+                    <p class="text-muted mb-1">
+                        {{ profile.designation|default:"" }}{% if profile.organization %} at {{ profile.organization }}{% endif %}
+                    </p>
+                {% endif %}
+
+                {% if profile.bio %}
+                    <hr>
+                    <p class="small">{{ profile.bio }}</p>
+                {% endif %}
+
+                {% if is_own_profile %}
+                    <a href="{% url 'profiles:edit' %}" class="btn btn-primary btn-sm mt-2">
+                        <i class="bi bi-pencil"></i> Edit My Profile
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Social links -->
+        {% if profile.facebook or profile.linkedin %}
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h6 class="text-muted">Connect</h6>
+                {% if profile.facebook and profile.facebook_visibility == 'VISIBLE' or is_own_profile %}
+                    <a href="{{ profile.facebook }}" target="_blank" class="btn btn-outline-primary btn-sm w-100 mb-2">
+                        <i class="bi bi-facebook"></i> Facebook
+                    </a>
+                {% endif %}
+                {% if profile.linkedin and profile.linkedin_visibility == 'VISIBLE' or is_own_profile %}
+                    <a href="{{ profile.linkedin }}" target="_blank" class="btn btn-outline-primary btn-sm w-100">
+                        <i class="bi bi-linkedin"></i> LinkedIn
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="col-md-8">
+        <!-- Contact -->
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Contact</h5>
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <th style="width: 180px;">Email</th>
+                        <td>
+                            {% if is_own_profile or profile.email_visibility == 'VISIBLE' %}
+                                <a href="mailto:{{ profile.user.email }}">{{ profile.user.email }}</a>
+                            {% else %}
+                                <span class="text-muted">Hidden</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Phone</th>
+                        <td>
+                            {% if is_own_profile or profile.phone_visibility == 'VISIBLE' %}
+                                {{ profile.phone|default:"—" }}
+                            {% else %}
+                                <span class="text-muted">Hidden</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Date of Birth</th>
+                        <td>
+                            {% if is_own_profile or profile.dob_visibility == 'VISIBLE' %}
+                                {{ profile.date_of_birth|default:"—" }}
+                            {% else %}
+                                <span class="text-muted">Hidden</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Blood Group</th>
+                        <td>{{ profile.blood_group|default:"—" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Gender</th>
+                        <td>{{ profile.get_gender_display|default:"—" }}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- University -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h5 class="card-title mb-3">University</h5>
+                <table class="table table-borderless mb-0">
+                    <tr><th style="width: 180px;">University</th><td>{{ profile.university|default:"—" }}</td></tr>
+                    <tr><th>Department</th><td>{{ profile.department|default:"—" }}</td></tr>
+                    <tr><th>Student ID</th><td>{{ profile.student_id|default:"—" }}</td></tr>
+                    <tr><th>Session</th><td>{{ profile.session|default:"—" }}</td></tr>
+                    <tr><th>Batch</th><td>{{ profile.batch|default:"—" }}</td></tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Location -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Location</h5>
+                <table class="table table-borderless mb-0">
+                    <tr>
+                        <th style="width: 180px;">Division</th>
+                        <td>{{ profile.division|default:"—" }}</td>
+                    </tr>
+                    <tr>
+                        <th>District</th>
+                        <td>
+                            {% if is_own_profile or profile.district_visibility == 'VISIBLE' %}
+                                {{ profile.district|default:"—" }}
+                            {% else %}
+                                <span class="text-muted">Hidden</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Upazila</th>
+                        <td>
+                            {% if is_own_profile or profile.upazila_visibility == 'VISIBLE' %}
+                                {{ profile.upazila|default:"—" }}
+                            {% else %}
+                                <span class="text-muted">Hidden</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <!-- Professional -->
+        <div class="card shadow-sm mt-3">
+            <div class="card-body">
+                <h5 class="card-title mb-3">Professional</h5>
+                <table class="table table-borderless mb-0">
+                    <tr><th style="width: 180px;">Occupation</th><td>{{ profile.occupation|default:"—" }}</td></tr>
+                    <tr>
+                        <th>Organization</th>
+                        <td>
+                            {% if is_own_profile or profile.organization_visibility == 'VISIBLE' %}
+                                {{ profile.organization|default:"—" }}
+                            {% else %}
+                                <span class="text-muted">Hidden</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr><th>Designation</th><td>{{ profile.designation|default:"—" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

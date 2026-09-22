@@ -1,0 +1,282 @@
+{% extends 'base.html' %}
+{% block title %}Member Directory{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Member Directory</h3>
+    <span class="text-muted">{{ total_count }} member{{ total_count|pluralize }} found</span>
+</div>
+
+<!-- Search & Filter Card -->
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" id="filter-form">
+            <!-- Search Bar -->
+            <div class="row g-2 mb-3">
+                <div class="col-md-10">
+                    <input type="text" name="q" class="form-control"
+                           placeholder="Search by name, student ID, organization, or designation..."
+                           value="{{ search }}">
+                </div>
+                <div class="col-md-2 d-grid">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">University</label>
+                    <select name="university" class="form-select form-select-sm" id="id_university">
+                        <option value="">All Universities</option>
+                        {% for u in universities %}
+                            <option value="{{ u.id }}" {% if selected.university == u.id|stringformat:"s" %}selected{% endif %}>
+                                {{ u.short_name|default:u.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Department</label>
+                    <select name="department" class="form-select form-select-sm">
+                        <option value="">All Departments</option>
+                        {% for d in departments %}
+                            <option value="{{ d.id }}" {% if selected.department == d.id|stringformat:"s" %}selected{% endif %}>
+                                {{ d.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Session</label>
+                    <select name="session" class="form-select form-select-sm">
+                        <option value="">All Sessions</option>
+                        {% for s in sessions %}
+                            <option value="{{ s.id }}" {% if selected.session == s.id|stringformat:"s" %}selected{% endif %}>
+                                {{ s.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Batch</label>
+                    <select name="batch" class="form-select form-select-sm">
+                        <option value="">All Batches</option>
+                        {% for b in batches %}
+                            <option value="{{ b.id }}" {% if selected.batch == b.id|stringformat:"s" %}selected{% endif %}>
+                                {{ b.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Division</label>
+                    <select name="division" class="form-select form-select-sm" id="id_division">
+                        <option value="">All Divisions</option>
+                        {% for d in divisions %}
+                            <option value="{{ d.id }}" {% if selected.division == d.id|stringformat:"s" %}selected{% endif %}>
+                                {{ d.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">District</label>
+                    <select name="district" class="form-select form-select-sm" id="id_district">
+                        <option value="">All Districts</option>
+                        {% for d in districts %}
+                            <option value="{{ d.id }}" {% if selected.district == d.id|stringformat:"s" %}selected{% endif %}>
+                                {{ d.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Upazila</label>
+                    <select name="upazila" class="form-select form-select-sm" id="id_upazila">
+                        <option value="">All Upazilas</option>
+                        {% for u in upazilas %}
+                            <option value="{{ u.id }}" {% if selected.upazila == u.id|stringformat:"s" %}selected{% endif %}>
+                                {{ u.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Occupation</label>
+                    <input type="text" name="occupation" class="form-control form-control-sm"
+                           placeholder="e.g. Engineer"
+                           value="{{ selected.occupation }}">
+                </div>
+            </div>
+
+            <div class="mt-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary btn-sm">
+                    <i class="bi bi-funnel"></i> Apply Filters
+                </button>
+                <a href="{% url 'members:directory' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle"></i> Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Grid -->
+{% if page_obj.object_list %}
+    <div class="row g-3">
+        {% for profile in page_obj %}
+            <div class="col-md-6 col-lg-4 col-xl-3">
+                <div class="card shadow-sm h-100 member-card">
+                    <div class="card-body text-center">
+                        {% if profile.profile_photo %}
+                            <img src="{{ profile.profile_photo.url }}"
+                                 class="rounded-circle mb-3"
+                                 style="width: 100px; height: 100px; object-fit: cover;">
+                        {% else %}
+                            <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                                 style="width: 100px; height: 100px; font-size: 2rem;">
+                                {{ profile.full_name|first|upper }}
+                            </div>
+                        {% endif %}
+
+                        <h6 class="mb-1">{{ profile.full_name }}</h6>
+
+                        {% if profile.designation or profile.organization %}
+                            <p class="small text-muted mb-1">
+                                {{ profile.designation|default:"" }}{% if profile.organization %} at {{ profile.organization }}{% endif %}
+                            </p>
+                        {% endif %}
+
+                        {% if profile.department %}
+                            <p class="small text-muted mb-1">
+                                <i class="bi bi-mortarboard"></i> {{ profile.department.name }}
+                            </p>
+                        {% endif %}
+
+                        {% if profile.session %}
+                            <p class="small text-muted mb-2">
+                                <i class="bi bi-calendar"></i> Session: {{ profile.session.name }}
+                            </p>
+                        {% endif %}
+
+                        <a href="{% url 'members:detail' profile.pk %}" class="btn btn-sm btn-outline-primary">
+                            View Profile
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+        <nav class="mt-4">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% querystring page=page_obj.previous_page_number %}">
+                            &laquo; Prev
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">&laquo; Prev</span></li>
+                {% endif %}
+
+                {% for num in page_obj.paginator.page_range %}
+                    {% if num == page_obj.number %}
+                        <li class="page-item active"><span class="page-link">{{ num }}</span></li>
+                    {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+                        <li class="page-item">
+                            <a class="page-link" href="?{% querystring page=num %}">{{ num }}</a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?{% querystring page=page_obj.next_page_number %}">
+                            Next &raquo;
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">Next &raquo;</span></li>
+                {% endif %}
+            </ul>
+        </nav>
+    {% endif %}
+
+{% else %}
+    <div class="text-center py-5">
+        <i class="bi bi-people display-1 text-muted"></i>
+        <h5 class="mt-3">No members found</h5>
+        <p class="text-muted">Try adjusting your search or filters.</p>
+        <a href="{% url 'members:directory' %}" class="btn btn-primary">Clear all filters</a>
+    </div>
+{% endif %}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Cascading Division → District → Upazila for filter dropdowns
+document.addEventListener('DOMContentLoaded', function () {
+    const divisionSelect = document.getElementById('id_division');
+    const districtSelect = document.getElementById('id_district');
+    const upazilaSelect = document.getElementById('id_upazila');
+
+    divisionSelect.addEventListener('change', function () {
+        const divisionId = this.value;
+        districtSelect.innerHTML = '<option value="">Loading...</option>';
+        upazilaSelect.innerHTML = '<option value="">All Upazilas</option>';
+
+        if (!divisionId) {
+            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            return;
+        }
+
+        fetch(`{% url 'profiles:ajax_districts' %}?division_id=${divisionId}`)
+            .then(r => r.json())
+            .then(data => {
+                districtSelect.innerHTML = '<option value="">All Districts</option>';
+                data.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.name;
+                    districtSelect.appendChild(opt);
+                });
+            });
+    });
+
+    districtSelect.addEventListener('change', function () {
+        const districtId = this.value;
+        upazilaSelect.innerHTML = '<option value="">Loading...</option>';
+
+        if (!districtId) {
+            upazilaSelect.innerHTML = '<option value="">All Upazilas</option>';
+            return;
+        }
+
+        fetch(`{% url 'profiles:ajax_upazilas' %}?district_id=${districtId}`)
+            .then(r => r.json())
+            .then(data => {
+                upazilaSelect.innerHTML = '<option value="">All Upazilas</option>';
+                data.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = u.name;
+                    upazilaSelect.appendChild(opt);
+                });
+            });
+    });
+});
+</script>
+{% endblock %}
