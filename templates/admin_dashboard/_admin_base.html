@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <nav class="col-md-2 d-none d-md-block bg-dark sidebar py-3"
+             style="min-height: calc(100vh - 60px);">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link text-white {% if request.resolver_match.url_name == 'home' %}active bg-primary{% endif %}"
+                       href="{% url 'admin_dashboard:home' %}">
+                        <i class="bi bi-speedometer2"></i> Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {% if request.resolver_match.url_name == 'pending_users' %}active bg-primary{% endif %}"
+                       href="{% url 'admin_dashboard:pending_users' %}">
+                        <i class="bi bi-hourglass-split"></i> Pending Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {% if request.resolver_match.url_name == 'users_list' %}active bg-primary{% endif %}"
+                       href="{% url 'admin_dashboard:users_list' %}">
+                        <i class="bi bi-people"></i> All Users
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <span class="text-muted small px-3">Content</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-calendar-event"></i> Events
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-megaphone"></i> Announcements
+                    </a>
+                </li>
+                <li class="nav-item mt-3">
+                    <span class="text-muted small px-3">Settings</span>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-building"></i> Universities
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white" href="#">
+                        <i class="bi bi-diagram-3"></i> Departments
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main content -->
+        <main class="col-md-10 ms-sm-auto px-md-4 py-3">
+            {% block admin_content %}{% endblock %}
+        </main>
+    </div>
+</div>
+
+<style>
+    .sidebar .nav-link {
+        padding: 0.6rem 1rem;
+        border-radius: 6px;
+        margin: 0 6px;
+    }
+    .sidebar .nav-link:hover {
+        background-color: rgba(255,255,255,0.1);
+    }
+    .sidebar .nav-link.active {
+        color: white !important;
+    }
+</style>
+{% endblock %}

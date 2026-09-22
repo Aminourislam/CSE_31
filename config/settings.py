@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'events',
     'announcements',
     'notifications',
+    'admin_dashboard',
 ]
 
 MIDDLEWARE = [

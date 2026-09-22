@@ -18,18 +18,24 @@
             <div class="collapse navbar-collapse" id="navMenu">
                 <ul class="navbar-nav ms-auto">
                     {% if user.is_authenticated %}
-<li class="nav-item dropdown">
-    <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
-        {{ user.email }}
-    </a>
-    <ul class="dropdown-menu dropdown-menu-end">
-        <li><a class="dropdown-item" href="{% url 'profiles:view' %}">My Profile</a></li>
-        <li><a class="dropdown-item" href="{% url 'profiles:edit' %}">Edit Profile</a></li>
-        <li><a class="dropdown-item" href="{% url 'profiles:privacy' %}">Privacy Settings</a></li>
-        <li><hr class="dropdown-divider"></li>
-        <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
-    </ul>
-</li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" href="#">
+                            {{ user.email }}
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            {% if user.role == 'ADMIN' or user.role == 'SUPER_ADMIN' %}
+                                <li><a class="dropdown-item" href="{% url 'admin_dashboard:home' %}">
+                                    <i class="bi bi-speedometer2"></i> Admin Dashboard
+                                </a></li>
+                                <li><hr class="dropdown-divider"></li>
+                            {% endif %}
+                            <li><a class="dropdown-item" href="{% url 'profiles:view' %}">My Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profiles:edit' %}">Edit Profile</a></li>
+                            <li><a class="dropdown-item" href="{% url 'profiles:privacy' %}">Privacy Settings</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="{% url 'accounts:logout' %}">Logout</a></li>
+                        </ul>
+                    </li>
                     {% else %}
                         <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
                         <li class="nav-item"><a class="nav-link" href="{% url 'accounts:register' %}">Register</a></li>

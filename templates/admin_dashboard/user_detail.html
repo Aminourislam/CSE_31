@@ -1,0 +1,121 @@
+{% extends 'admin_dashboard/_admin_base.html' %}
+{% block title %}{{ target_user.email }} — Admin{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div>
+        <a href="{% url 'admin_dashboard:users_list' %}" class="btn btn-sm btn-outline-secondary mb-2">
+            <i class="bi bi-arrow-left"></i> Back to Users
+        </a>
+        <h3 class="mb-0">{{ target_user.profile.full_name|default:target_user.email }}</h3>
+        <p class="text-muted mb-0 small">{{ target_user.email }}</p>
+    </div>
+    <div>
+        {% if target_user.status == 'PENDING' %}
+            <span class="badge bg-warning fs-6">Pending</span>
+        {% elif target_user.status == 'APPROVED' %}
+            <span class="badge bg-success fs-6">Approved</span>
+        {% elif target_user.status == 'REJECTED' %}
+            <span class="badge bg-danger fs-6">Rejected</span>
+        {% elif target_user.status == 'SUSPENDED' %}
+            <span class="badge bg-dark fs-6">Suspended</span>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Action buttons -->
+<div class="card shadow-sm mb-3">
+    <div class="card-body d-flex gap-2 flex-wrap">
+        {% if target_user.status == 'PENDING' %}
+            <form method="post" action="{% url 'admin_dashboard:approve_user' target_user.id %}">
+                {% csrf_token %}
+                <button class="btn btn-success"><i class="bi bi-check-lg"></i> Approve</button>
+            </form>
+            <form method="post" action="{% url 'admin_dashboard:reject_user' target_user.id %}"
+                  onsubmit="return confirm('Reject this user?');">
+                {% csrf_token %}
+                <button class="btn btn-danger"><i class="bi bi-x-lg"></i> Reject</button>
+            </form>
+        {% elif target_user.status == 'APPROVED' %}
+            <form method="post" action="{% url 'admin_dashboard:suspend_user' target_user.id %}"
+                  onsubmit="return confirm('Suspend this user?');">
+                {% csrf_token %}
+                <button class="btn btn-outline-dark"><i class="bi bi-slash-circle"></i> Suspend</button>
+            </form>
+        {% elif target_user.status == 'SUSPENDED' or target_user.status == 'REJECTED' %}
+            <form method="post" action="{% url 'admin_dashboard:restore_user' target_user.id %}">
+                {% csrf_token %}
+                <button class="btn btn-outline-success"><i class="bi bi-arrow-counterclockwise"></i> Restore</button>
+            </form>
+        {% endif %}
+
+        {% if target_user != request.user %}
+            <form method="post" action="{% url 'admin_dashboard:delete_user' target_user.id %}"
+                  onsubmit="return confirm('Permanently delete this user? This cannot be undone.');">
+                {% csrf_token %}
+                <button class="btn btn-outline-danger"><i class="bi bi-trash"></i> Delete</button>
+            </form>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-3">
+    <!-- Left column: profile summary -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                {% if target_user.profile.profile_photo %}
+                    <img src="{{ target_user.profile.profile_photo.url }}"
+                         class="rounded-circle mb-3"
+                         style="width: 140px; height: 140px; object-fit: cover;">
+                {% else %}
+                    <div class="rounded-circle bg-secondary text-white d-inline-flex align-items-center justify-content-center mb-3"
+                         style="width: 140px; height: 140px; font-size: 3rem;">
+                        {{ target_user.profile.full_name|first|upper }}
+                    </div>
+                {% endif %}
+                <h5 class="mb-0">{{ target_user.profile.full_name }}</h5>
+                <p class="text-muted small">{{ target_user.profile.designation }}{% if target_user.profile.organization %} at {{ target_user.profile.organization }}{% endif %}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Right column: details -->
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h6 class="text-primary">Account</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 180px;">Email</th><td>{{ target_user.email }}</td></tr>
+                    <tr><th>Role</th><td>{{ target_user.get_role_display }}</td></tr>
+                    <tr><th>Status</th><td>{{ target_user.get_status_display }}</td></tr>
+                    <tr><th>Joined</th><td>{{ target_user.created_at|date:"M d, Y H:i" }}</td></tr>
+                </table>
+
+                <h6 class="text-primary mt-3">Contact</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 180px;">Phone</th><td>{{ target_user.profile.phone|default:"—" }}</td></tr>
+                    <tr><th>Gender</th><td>{{ target_user.profile.get_gender_display|default:"—" }}</td></tr>
+                    <tr><th>Date of Birth</th><td>{{ target_user.profile.date_of_birth|default:"—" }}</td></tr>
+                </table>
+
+                <h6 class="text-primary mt-3">University</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 180px;">University</th><td>{{ target_user.profile.university|default:"—" }}</td></tr>
+                    <tr><th>Department</th><td>{{ target_user.profile.department|default:"—" }}</td></tr>
+                    <tr><th>Student ID</th><td>{{ target_user.profile.student_id|default:"—" }}</td></tr>
+                    <tr><th>Session</th><td>{{ target_user.profile.session|default:"—" }}</td></tr>
+                    <tr><th>Batch</th><td>{{ target_user.profile.batch|default:"—" }}</td></tr>
+                </table>
+
+                <h6 class="text-primary mt-3">Location</h6>
+                <table class="table table-sm">
+                    <tr><th style="width: 180px;">Division</th><td>{{ target_user.profile.division|default:"—" }}</td></tr>
+                    <tr><th>District</th><td>{{ target_user.profile.district|default:"—" }}</td></tr>
+                    <tr><th>Upazila</th><td>{{ target_user.profile.upazila|default:"—" }}</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
