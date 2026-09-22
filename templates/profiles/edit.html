@@ -1,0 +1,201 @@
+{% extends 'base.html' %}
+{% block title %}Edit Profile{% endblock %}
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h3 class="mb-4">Edit Profile</h3>
+
+                <form method="post" enctype="multipart/form-data" id="profile-form">
+                    {% csrf_token %}
+
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger">{{ form.non_field_errors }}</div>
+                    {% endif %}
+
+                    <h5 class="text-primary mt-3">Personal Information</h5>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Full Name</label>
+                            {{ form.full_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Profile Photo</label>
+                            {{ form.profile_photo }}
+                            {% if profile.profile_photo %}
+                                <small class="text-muted d-block mt-1">Current: {{ profile.profile_photo.name }}</small>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Gender</label>
+                            {{ form.gender }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Date of Birth</label>
+                            {{ form.date_of_birth }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Blood Group</label>
+                            {{ form.blood_group }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Phone</label>
+                            {{ form.phone }}
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary mt-4">University Information</h5>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">University</label>
+                            {{ form.university }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Department</label>
+                            {{ form.department }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Student ID</label>
+                            {{ form.student_id }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Session</label>
+                            {{ form.session }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Batch</label>
+                            {{ form.batch }}
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary mt-4">Location</h5>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Division</label>
+                            {{ form.division }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">District</label>
+                            {{ form.district }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Upazila</label>
+                            {{ form.upazila }}
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary mt-4">Professional</h5>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label">Occupation</label>
+                            {{ form.occupation }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Organization</label>
+                            {{ form.organization }}
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label">Designation</label>
+                            {{ form.designation }}
+                        </div>
+                    </div>
+
+                    <h5 class="text-primary mt-4">Social & Bio</h5>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label">Facebook</label>
+                            {{ form.facebook }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">LinkedIn</label>
+                            {{ form.linkedin }}
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Bio</label>
+                            {{ form.bio }}
+                        </div>
+                    </div>
+
+                    <div class="mt-4 d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check2-circle"></i> Save Changes
+                        </button>
+                        <a href="{% url 'profiles:view' %}" class="btn btn-outline-secondary">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const divisionSelect = document.getElementById('id_division');
+    const districtSelect = document.getElementById('id_district');
+    const upazilaSelect = document.getElementById('id_upazila');
+
+    function loadDistricts(divisionId, selectedDistrict) {
+        districtSelect.innerHTML = '<option value="">-- Select District --</option>';
+        upazilaSelect.innerHTML = '<option value="">-- Select Upazila --</option>';
+        if (!divisionId) return;
+
+        fetch(`{% url 'profiles:ajax_districts' %}?division_id=${divisionId}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.name;
+                    if (selectedDistrict && String(d.id) === String(selectedDistrict)) {
+                        opt.selected = true;
+                    }
+                    districtSelect.appendChild(opt);
+                });
+            });
+    }
+
+    function loadUpazilas(districtId, selectedUpazila) {
+        upazilaSelect.innerHTML = '<option value="">-- Select Upazila --</option>';
+        if (!districtId) return;
+
+        fetch(`{% url 'profiles:ajax_upazilas' %}?district_id=${districtId}`)
+            .then(res => res.json())
+            .then(data => {
+                data.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = u.name;
+                    if (selectedUpazila && String(u.id) === String(selectedUpazila)) {
+                        opt.selected = true;
+                    }
+                    upazilaSelect.appendChild(opt);
+                });
+            });
+    }
+
+    divisionSelect.addEventListener('change', function () {
+        loadDistricts(this.value, null);
+    });
+
+    districtSelect.addEventListener('change', function () {
+        loadUpazilas(this.value, null);
+    });
+
+    // Preload on page load if values already selected
+    {% if profile.division_id %}
+        loadDistricts('{{ profile.division_id }}', '{{ profile.district_id|default:"" }}');
+    {% endif %}
+    {% if profile.district_id %}
+        loadUpazilas('{{ profile.district_id }}', '{{ profile.upazila_id|default:"" }}');
+    {% endif %}
+});
+</script>
+{% endblock %}

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<div class="container">
+    <h2 class="mb-4">Welcome, {{ user.email }}</h2>
+
+    <div class="row g-3">
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">My Profile</h5>
+                    <p class="text-muted">Update your personal information.</p>
+                    <a href="{% url 'profiles:view' %}" class="btn btn-outline-primary btn-sm">Go to Profile</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Member Directory</h5>
+                    <p class="text-muted">Find other approved members.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Browse Members</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Events</h5>
+                    <p class="text-muted">See upcoming events and register.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">View Events</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">Announcements</h5>
+                    <p class="text-muted">Read the latest announcements.</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm">Read Announcements</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
