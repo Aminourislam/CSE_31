@@ -24,7 +24,8 @@ urlpatterns = [
     path('events/<int:pk>/edit/', event_views.event_edit, name='event_edit'),
     path('events/<int:pk>/delete/', event_views.event_delete, name='event_delete'),
     path('events/<int:pk>/participants/', event_views.event_participants, name='event_participants'),
-
+    path('events/<int:pk>/participants/export/', event_views.event_participants_export, name='event_participants_export'),  # ← new
+    
     # Announcements
     path('announcements/', announcement_views.announcements_list, name='announcements_list'),
     path('announcements/create/', announcement_views.announcement_create, name='announcement_create'),

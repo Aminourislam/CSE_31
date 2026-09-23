@@ -56,17 +56,23 @@
                             <span class="badge bg-secondary">Draft</span>
                         {% endif %}
                     </td>
-                    <td class="text-end">
-                        <a href="{% url 'events:detail' event.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
-                            <i class="bi bi-eye"></i>
-                        </a>
-                        <a href="{% url 'admin_dashboard:event_edit' event.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
-                            <i class="bi bi-pencil"></i>
-                        </a>
-                        <a href="{% url 'admin_dashboard:event_delete' event.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
-                            <i class="bi bi-trash"></i>
-                        </a>
-                    </td>
+                        <td class="text-end">
+                            {% if event.participant_count %}
+                                <a href="{% url 'admin_dashboard:event_participants_export' event.pk %}"
+                                class="btn btn-sm btn-outline-success" title="Export Participants CSV">
+                                    <i class="bi bi-filetype-csv"></i>
+                                </a>
+                            {% endif %}
+                            <a href="{% url 'events:detail' event.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+                                <i class="bi bi-eye"></i>
+                            </a>
+                            <a href="{% url 'admin_dashboard:event_edit' event.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a href="{% url 'admin_dashboard:event_delete' event.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </td>
                 </tr>
                 {% empty %}
                 <tr><td colspan="6" class="text-center text-muted py-4">No events yet.</td></tr>
