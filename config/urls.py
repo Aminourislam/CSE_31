@@ -10,6 +10,7 @@ urlpatterns = [
     path('members/', include('members.urls')),
     path('profile/', include('profiles.urls')),
     path('events/', include('events.urls')),                     # ← Add
+    path('announcements/', include('announcements.urls')),
     path('admin-dashboard/', include('admin_dashboard.urls')),
     path('', RedirectView.as_view(url='/accounts/login/', permanent=False)),
 ]

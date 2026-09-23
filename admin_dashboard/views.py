@@ -6,7 +6,9 @@ from django.core.paginator import Paginator
 from accounts.models import User
 
 from .permissions import admin_required
+
 from events.models import Event
+from announcements.models import Announcement
 
 # ============================================
 # HOME / STATS
@@ -21,9 +23,9 @@ def home(request):
 
     # These will be replaced when Events/Announcements apps are built
     total_events = Event.objects.count()
-    total_announcements = 0
     upcoming_events = Event.objects.filter(is_published=True).order_by('-created_at')[:5]
-    recent_announcements = []
+    total_announcements = Announcement.objects.count()
+    recent_announcements = Announcement.objects.order_by('-created_at')[:5]
 
     recent_registrations = (
         User.objects

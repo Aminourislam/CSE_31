@@ -1,0 +1,90 @@
+{% extends 'admin_dashboard/_admin_base.html' %}
+{% block title %}Manage Announcements{% endblock %}
+
+{% block admin_content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Manage Announcements</h3>
+    <a href="{% url 'admin_dashboard:announcement_create' %}" class="btn btn-primary btn-sm">
+        <i class="bi bi-plus-lg"></i> Create Announcement
+    </a>
+</div>
+
+<div class="card shadow-sm mb-3">
+    <div class="card-body">
+        <form method="get" class="row g-2">
+            <div class="col-md-10">
+                <input type="text" name="q" class="form-control form-control-sm"
+                       placeholder="Search by title..." value="{{ search }}">
+            </div>
+            <div class="col-md-2 d-grid">
+                <button class="btn btn-primary btn-sm">Search</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Title</th>
+                    <th>Created By</th>
+                    <th>Published</th>
+                    <th>Created At</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for a in page_obj %}
+                <tr>
+                    <td><strong>{{ a.title }}</strong></td>
+                    <td class="small text-muted">{{ a.created_by.email|default:"—" }}</td>
+                    <td>
+                        {% if a.is_published %}
+                            <span class="badge bg-success">Published</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Draft</span>
+                        {% endif %}
+                    </td>
+                    <td class="small text-muted">{{ a.created_at|date:"M d, Y H:i" }}</td>
+                    <td class="text-end">
+                        <a href="{% url 'announcements:detail' a.pk %}" class="btn btn-sm btn-outline-secondary" title="View">
+                            <i class="bi bi-eye"></i>
+                        </a>
+                        <form method="post" action="{% url 'admin_dashboard:announcement_toggle_publish' a.pk %}" class="d-inline">
+                            {% csrf_token %}
+                            <button class="btn btn-sm btn-outline-info" title="Toggle Publish">
+                                <i class="bi bi-toggle-on"></i>
+                            </button>
+                        </form>
+                        <a href="{% url 'admin_dashboard:announcement_edit' a.pk %}" class="btn btn-sm btn-outline-primary" title="Edit">
+                            <i class="bi bi-pencil"></i>
+                        </a>
+                        <a href="{% url 'admin_dashboard:announcement_delete' a.pk %}" class="btn btn-sm btn-outline-danger" title="Delete">
+                            <i class="bi bi-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="5" class="text-center text-muted py-4">No announcements yet.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+{% if page_obj.has_other_pages %}
+<nav class="mt-3">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if search %}&q={{ search }}{% endif %}">&laquo;</a></li>
+        {% endif %}
+        <li class="page-item active"><span class="page-link">{{ page_obj.number }} / {{ page_obj.paginator.num_pages }}</span></li>
+        {% if page_obj.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}{% if search %}&q={{ search }}{% endif %}">&raquo;</a></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

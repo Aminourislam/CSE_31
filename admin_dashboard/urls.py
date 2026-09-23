@@ -1,5 +1,5 @@
 from django.urls import path
-from . import views, event_views
+from . import views, event_views, announcement_views
 
 app_name = 'admin_dashboard'
 
@@ -22,4 +22,11 @@ urlpatterns = [
     path('events/<int:pk>/edit/', event_views.event_edit, name='event_edit'),
     path('events/<int:pk>/delete/', event_views.event_delete, name='event_delete'),
     path('events/<int:pk>/participants/', event_views.event_participants, name='event_participants'),
+
+    # Announcements
+    path('announcements/', announcement_views.announcements_list, name='announcements_list'),
+    path('announcements/create/', announcement_views.announcement_create, name='announcement_create'),
+    path('announcements/<int:pk>/edit/', announcement_views.announcement_edit, name='announcement_edit'),
+    path('announcements/<int:pk>/delete/', announcement_views.announcement_delete, name='announcement_delete'),
+    path('announcements/<int:pk>/toggle-publish/', announcement_views.announcement_toggle_publish, name='announcement_toggle_publish'),
 ]

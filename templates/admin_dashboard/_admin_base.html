@@ -35,7 +35,8 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
+                    <a class="nav-link text-white {% if 'announcement' in request.resolver_match.url_name %}active bg-primary{% endif %}"
+                    href="{% url 'admin_dashboard:announcements_list' %}">
                         <i class="bi bi-megaphone"></i> Announcements
                     </a>
                 </li>
