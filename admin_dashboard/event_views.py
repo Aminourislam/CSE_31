@@ -170,13 +170,7 @@ def event_participants_export(request, pk):
             p.department.name if p.department else '',
             p.session.name if p.session else '',
             p.batch.name if p.batch else '',
-            p.division.name if p.division else '',
-            p.district.name if p.district else '',
-            p.upazila.name if p.upazila else '',
-            p.occupation or '',
-            p.organization or '',
-            p.designation or '',
-            reg.registered_at.strftime('%Y-%m-%d %H:%M'),
+
         ])
 
     return response
