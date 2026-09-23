@@ -1,5 +1,6 @@
 from django.urls import path
 from . import views, event_views, announcement_views
+from . import views, event_views, announcement_views, export_views
 
 app_name = 'admin_dashboard'
 
@@ -29,4 +30,7 @@ urlpatterns = [
     path('announcements/<int:pk>/edit/', announcement_views.announcement_edit, name='announcement_edit'),
     path('announcements/<int:pk>/delete/', announcement_views.announcement_delete, name='announcement_delete'),
     path('announcements/<int:pk>/toggle-publish/', announcement_views.announcement_toggle_publish, name='announcement_toggle_publish'),
+
+    # Export
+    path('export/', export_views.export_members, name='export'),
 ]

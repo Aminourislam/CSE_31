@@ -40,6 +40,12 @@
                         <i class="bi bi-megaphone"></i> Announcements
                     </a>
                 </li>
+                <li class="nav-item">
+                    <a class="nav-link text-white {% if request.resolver_match.url_name == 'export' %}active bg-primary{% endif %}"
+                    href="{% url 'admin_dashboard:export' %}">
+                        <i class="bi bi-download"></i> Export
+                    </a>
+                </li>
                 <li class="nav-item mt-3">
                     <span class="text-muted small px-3">Settings</span>
                 </li>

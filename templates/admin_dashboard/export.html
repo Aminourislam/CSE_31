@@ -1,0 +1,193 @@
+{% extends 'admin_dashboard/_admin_base.html' %}
+{% block title %}Export Members{% endblock %}
+
+{% block admin_content %}
+<h3 class="mb-3">Export Members</h3>
+
+<p class="text-muted">
+    Choose filters below, then click <strong>Export CSV</strong> or <strong>Export Excel</strong>.
+    Only <strong>approved</strong> members are exported.
+</p>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="get" id="export-form">
+            <!-- Search -->
+            <div class="row g-2 mb-3">
+                <div class="col-md-12">
+                    <label class="form-label small text-muted">Search (name, student ID, organization, designation)</label>
+                    <input type="text" name="q" class="form-control form-control-sm"
+                           placeholder="Type to filter..." value="{{ selected.q }}">
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="row g-2">
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">University</label>
+                    <select name="university" class="form-select form-select-sm" id="id_university">
+                        <option value="">All</option>
+                        {% for u in universities %}
+                            <option value="{{ u.id }}" {% if selected.university == u.id|stringformat:"s" %}selected{% endif %}>
+                                {{ u.short_name|default:u.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Department</label>
+                    <select name="department" class="form-select form-select-sm">
+                        <option value="">All</option>
+                        {% for d in departments %}
+                            <option value="{{ d.id }}" {% if selected.department == d.id|stringformat:"s" %}selected{% endif %}>
+                                {{ d.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Session</label>
+                    <select name="session" class="form-select form-select-sm">
+                        <option value="">All</option>
+                        {% for s in sessions %}
+                            <option value="{{ s.id }}" {% if selected.session == s.id|stringformat:"s" %}selected{% endif %}>
+                                {{ s.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Batch</label>
+                    <select name="batch" class="form-select form-select-sm">
+                        <option value="">All</option>
+                        {% for b in batches %}
+                            <option value="{{ b.id }}" {% if selected.batch == b.id|stringformat:"s" %}selected{% endif %}>
+                                {{ b.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Division</label>
+                    <select name="division" class="form-select form-select-sm" id="id_division">
+                        <option value="">All</option>
+                        {% for d in divisions %}
+                            <option value="{{ d.id }}" {% if selected.division == d.id|stringformat:"s" %}selected{% endif %}>
+                                {{ d.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">District</label>
+                    <select name="district" class="form-select form-select-sm" id="id_district">
+                        <option value="">All</option>
+                        {% for d in districts %}
+                            <option value="{{ d.id }}" {% if selected.district == d.id|stringformat:"s" %}selected{% endif %}>
+                                {{ d.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Upazila</label>
+                    <select name="upazila" class="form-select form-select-sm" id="id_upazila">
+                        <option value="">All</option>
+                        {% for u in upazilas %}
+                            <option value="{{ u.id }}" {% if selected.upazila == u.id|stringformat:"s" %}selected{% endif %}>
+                                {{ u.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <label class="form-label small text-muted">Occupation</label>
+                    <input type="text" name="occupation" class="form-control form-control-sm"
+                           placeholder="e.g. Engineer" value="{{ selected.occupation }}">
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mt-4 d-flex flex-wrap gap-2 align-items-center">
+                <button type="submit" class="btn btn-outline-primary btn-sm">
+                    <i class="bi bi-funnel"></i> Preview
+                </button>
+
+                <button type="submit" name="format" value="csv" class="btn btn-success btn-sm">
+                    <i class="bi bi-filetype-csv"></i> Export CSV
+                </button>
+
+                <button type="submit" name="format" value="xlsx" class="btn btn-success btn-sm">
+                    <i class="bi bi-file-earmark-excel"></i> Export Excel
+                </button>
+
+                <a href="{% url 'admin_dashboard:export' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-circle"></i> Clear
+                </a>
+
+                <span class="ms-auto badge bg-info text-dark fs-6">
+                    {{ filtered_count }} member{{ filtered_count|pluralize }} match
+                </span>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="alert alert-light border mt-3 small">
+    <strong>Note:</strong> Exports respect the filters above. CSV files open directly in Excel/Sheets.
+    The <code>.xlsx</code> format requires the <code>openpyxl</code> package.
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Cascade Division → District → Upazila for filter dropdowns
+document.addEventListener('DOMContentLoaded', function () {
+    const divisionSelect = document.getElementById('id_division');
+    const districtSelect = document.getElementById('id_district');
+    const upazilaSelect = document.getElementById('id_upazila');
+
+    divisionSelect.addEventListener('change', function () {
+        const divisionId = this.value;
+        districtSelect.innerHTML = '<option value="">All</option>';
+        upazilaSelect.innerHTML = '<option value="">All</option>';
+        if (!divisionId) return;
+
+        fetch(`{% url 'profiles:ajax_districts' %}?division_id=${divisionId}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(d => {
+                    const opt = document.createElement('option');
+                    opt.value = d.id;
+                    opt.textContent = d.name;
+                    districtSelect.appendChild(opt);
+                });
+            });
+    });
+
+    districtSelect.addEventListener('change', function () {
+        const districtId = this.value;
+        upazilaSelect.innerHTML = '<option value="">All</option>';
+        if (!districtId) return;
+
+        fetch(`{% url 'profiles:ajax_upazilas' %}?district_id=${districtId}`)
+            .then(r => r.json())
+            .then(data => {
+                data.forEach(u => {
+                    const opt = document.createElement('option');
+                    opt.value = u.id;
+                    opt.textContent = u.name;
+                    upazilaSelect.appendChild(opt);
+                });
+            });
+    });
+});
+</script>
+{% endblock %}
