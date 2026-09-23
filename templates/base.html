@@ -37,10 +37,11 @@
                         </ul>
                     </li>
                     {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'accounts:register' %}">Register</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'members:dashboard' %}">Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{% url 'members:directory' %}">Members</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:login' %}">Login</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'accounts:register' %}">Register</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'members:dashboard' %}">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'members:directory' %}">Members</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{% url 'events:list' %}">Events</a></li>
                     {% endif %}
                 </ul>
             </div>

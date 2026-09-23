@@ -29,7 +29,8 @@
                     <span class="text-muted small px-3">Content</span>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link text-white" href="#">
+                    <a class="nav-link text-white {% if 'events' in request.resolver_match.url_name %}active bg-primary{% endif %}"
+                    href="{% url 'admin_dashboard:events_list' %}">
                         <i class="bi bi-calendar-event"></i> Events
                     </a>
                 </li>

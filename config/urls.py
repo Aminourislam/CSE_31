@@ -7,8 +7,9 @@ from django.views.generic import RedirectView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('accounts.urls')),
-    path('members/', include('members.urls')),     # ← Add this
-    path("profile/", include('profiles.urls')),
+    path('members/', include('members.urls')),
+    path('profile/', include('profiles.urls')),
+    path('events/', include('events.urls')),                     # ← Add
     path('admin-dashboard/', include('admin_dashboard.urls')),
     path('', RedirectView.as_view(url='/accounts/login/', permanent=False)),
 ]
