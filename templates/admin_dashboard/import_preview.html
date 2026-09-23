@@ -1,0 +1,142 @@
+{% extends 'admin_dashboard/_admin_base.html' %}
+{% block title %}Import Preview{% endblock %}
+
+{% block admin_content %}
+<h3 class="mb-3">Import Preview</h3>
+
+<div class="row g-2 mb-3">
+    <div class="col-md-3">
+        <div class="card bg-light border-0">
+            <div class="card-body text-center">
+                <div class="h4 mb-0">{{ total_count }}</div>
+                <small class="text-muted">Total rows</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-success text-white border-0">
+            <div class="card-body text-center">
+                <div class="h4 mb-0">{{ valid_count }}</div>
+                <small>Ready to import</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card bg-danger text-white border-0">
+            <div class="card-body text-center">
+                <div class="h4 mb-0">{{ error_count }}</div>
+                <small>With errors</small>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0">
+            <div class="card-body text-center">
+                <a href="{% url 'admin_dashboard:import_members' %}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i> Upload another
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error rows -->
+{% if error_rows %}
+<div class="card shadow-sm mb-3 border-danger">
+    <div class="card-header bg-danger text-white">
+        <h6 class="mb-0"><i class="bi bi-x-octagon"></i> Rows with errors ({{ error_count }})</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive" style="max-height: 300px;">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Row</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Student ID</th>
+                        <th>Errors</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in error_rows %}
+                    <tr>
+                        <td>{{ row.row_number }}</td>
+                        <td>{{ row.full_name|default:"—" }}</td>
+                        <td class="small text-muted">{{ row.email|default:"—" }}</td>
+                        <td class="small">{{ row.student_id|default:"—" }}</td>
+                        <td>
+                            {% for e in row.errors_list %}
+                                <span class="badge bg-danger me-1">{{ e }}</span>
+                            {% endfor %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Valid rows -->
+{% if valid_rows %}
+<div class="card shadow-sm mb-3 border-success">
+    <div class="card-header bg-success text-white">
+        <h6 class="mb-0"><i class="bi bi-check-circle"></i> Valid rows ({{ valid_count }})</h6>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive" style="max-height: 300px;">
+            <table class="table table-sm mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th>Row</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Student ID</th>
+                        <th>Department</th>
+                        <th>Session</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in valid_rows %}
+                    <tr>
+                        <td>{{ row.row_number }}</td>
+                        <td>{{ row.full_name }}</td>
+                        <td class="small text-muted">{{ row.email }}</td>
+                        <td class="small">{{ row.student_id }}</td>
+                        <td class="small">{{ row.department|default:"—" }}</td>
+                        <td class="small">{{ row.session|default:"—" }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Confirm -->
+<div class="card shadow-sm">
+    <div class="card-body d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <strong>Ready to import {{ valid_count }} member{{ valid_count|pluralize }}?</strong>
+            <p class="text-muted small mb-0">
+                Error rows will be skipped. Members will be created as <strong>APPROVED</strong>.
+            </p>
+        </div>
+        <div>
+            <a href="{% url 'admin_dashboard:import_members' %}" class="btn btn-outline-secondary">Cancel</a>
+            {% if valid_count %}
+                <form method="post" action="{% url 'admin_dashboard:import_members' %}" class="d-inline">
+                    {% csrf_token %}
+                    <input type="hidden" name="confirm" value="1">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check2-circle"></i> Confirm Import
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

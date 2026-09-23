@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views, event_views, announcement_views
 from . import views, event_views, announcement_views, export_views
+from . import views, event_views, announcement_views, export_views, import_views
 
 app_name = 'admin_dashboard'
 
@@ -33,4 +34,6 @@ urlpatterns = [
 
     # Export
     path('export/', export_views.export_members, name='export'),
+    # Import
+    path('import/', import_views.import_members, name='import_members'),
 ]
